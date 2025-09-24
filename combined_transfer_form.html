@@ -1,0 +1,362 @@
+<!--
+  combined_transfer_form.html
+
+  This snippet provides a self‑contained airport transfer search form which can be
+  injected into the Holiday Extras landing page below the existing “Airport Transfers”
+  header.  It hides the legacy booking engine and hero section (identified by the
+  `#horizontalEngine` and `.jumbotron.block-md.jumbotron-cover` selectors) and
+  replaces them with a clean, fully responsive form.  The layout adapts across
+  desktop, mobile portrait, and mobile landscape breakpoints, matching the
+  behaviour of the original site while bringing improved spacing and a two‑row
+  layout for landscape orientation.  Copy everything inside this file into
+  your CMS after the “Airport Transfers” heading.
+-->
+
+<style id="transfer-merge-overrides">
+  /*
+    Hide the original transfer engine and hero image on pages where this
+    snippet is injected.  Without this, both the old and new engines would
+    appear on the page.  The !important declarations ensure our rules take
+    precedence over existing styles.
+  */
+  #horizontalEngine,
+  .jumbotron.block-md.jumbotron-cover,
+  .paymentMethodsContainer {
+    display: none !important;
+  }
+
+  /*
+    Base resets and sensible defaults.  We keep margins and paddings to
+    predictable values across different browser engines.
+  */
+  .ayo-transfer-form-container * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .ayo-transfer-form-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, sans-serif;
+    line-height: 1.5;
+    color: #333;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .ayo-transfer-form {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /*
+    Transfer type (airport vs hotel) segmented control.  We rely on simple
+    radio inputs styled as pills.  The `.active` class is toggled via the
+    accompanying script below to reflect the checked state.
+  */
+  .ayo-transfer-type {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .ayo-transfer-type .option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .ayo-transfer-type .option.active {
+    border-color: #542e91;
+    background: #f8f5fb;
+  }
+
+  .ayo-transfer-type .option input {
+    margin-right: 0.5rem;
+    width: 18px;
+    height: 18px;
+  }
+
+  /*
+    Default field styling.  Each form field stacks its label and control.
+  */
+  .ayo-form-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  .ayo-form-field label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #333;
+  }
+
+  .ayo-form-field input,
+  .ayo-form-field select {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+  }
+
+  .ayo-form-field input:focus,
+  .ayo-form-field select:focus {
+    outline: none;
+    border-color: #542e91;
+    box-shadow: 0 0 0 2px rgba(84, 46, 145, 0.15);
+  }
+
+  .ayo-help-link {
+    font-size: 0.8rem;
+    color: #542e91;
+    text-decoration: none;
+    margin-top: 0.25rem;
+  }
+
+  .ayo-help-link:hover {
+    text-decoration: underline;
+  }
+
+  /*
+    Search button container – ensures vertical alignment across breakpoints.
+  */
+  .ayo-search-container {
+    display: flex;
+    align-items: end;
+  }
+
+  .ayo-search-button {
+    background: #542e91;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .ayo-search-button:hover {
+    background: #3d1f6b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(84, 46, 145, 0.3);
+  }
+
+  .ayo-search-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(84, 46, 145, 0.2);
+  }
+
+  /*
+    Desktop layout (≥1024px): all fields in one row with generous spacing.
+  */
+  @media (min-width: 1024px) {
+    .ayo-form-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr) auto;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .ayo-form-field {
+      margin-bottom: 0;
+      min-height: 85px;
+    }
+    .ayo-form-field input,
+    .ayo-form-field select {
+      height: 52px;
+      padding: 0.875rem;
+      font-size: 1rem;
+    }
+    .ayo-search-container {
+      padding-top: 1.5rem;
+    }
+    .ayo-search-button {
+      height: 52px;
+      padding: 0.875rem 2rem;
+    }
+  }
+
+  /*
+    Mobile portrait (≤767px): single column stacking with larger touch targets.
+  */
+  @media (max-width: 767px) {
+    .ayo-form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .ayo-form-field label {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .ayo-form-field input,
+    .ayo-form-field select {
+      height: 56px;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+    .ayo-help-link {
+      font-size: 0.9rem;
+      margin-top: 0.75rem;
+    }
+    .ayo-search-container {
+      margin-top: 1rem;
+      justify-content: center;
+    }
+    .ayo-search-button {
+      height: 56px;
+      width: 100%;
+      max-width: 320px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(84, 46, 145, 0.3);
+    }
+  }
+
+  /*
+    Mobile landscape (768–1023px): 3 columns × 2 rows grid.  The Search
+    button spans the third column of the second row, ensuring that it sits
+    alongside the Return flight and Travellers fields.  We also reduce
+    padding/margins to fit comfortably on limited vertical space.
+  */
+  @media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+    .ayo-form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .ayo-form-field {
+      min-height: 75px;
+    }
+    .ayo-form-field label {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .ayo-form-field input,
+    .ayo-form-field select {
+      height: 50px;
+      padding: 0.75rem;
+      font-size: 1rem;
+    }
+    .ayo-help-link {
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    /* grid placement: first three fields on first row, next two on second row */
+    .ayo-form-field:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+    .ayo-form-field:nth-of-type(2) { grid-column: 2; grid-row: 1; }
+    .ayo-form-field:nth-of-type(3) { grid-column: 3; grid-row: 1; }
+    .ayo-form-field:nth-of-type(4) { grid-column: 1; grid-row: 2; }
+    .ayo-form-field:nth-of-type(5) { grid-column: 2; grid-row: 2; }
+    .ayo-search-container {
+      grid-column: 3;
+      grid-row: 2;
+      display: flex;
+      align-items: end;
+      padding-top: 0.5rem;
+    }
+    .ayo-search-button {
+      height: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(84, 46, 145, 0.2);
+    }
+  }
+</style>
+
+<div class="ayo-transfer-form-container">
+  <div class="ayo-transfer-form">
+    <!-- Transfer type selection (Airport vs Hotel) -->
+    <div class="ayo-transfer-type" role="group">
+      <label class="option active">
+        <input type="radio" name="transferType" value="airport" checked>
+        <span>Overseas Airport Transfers</span>
+      </label>
+      <label class="option">
+        <input type="radio" name="transferType" value="hotel">
+        <span>Overseas Hotel Transfers</span>
+      </label>
+    </div>
+
+    <!-- Transfer form -->
+    <form class="ayo-form-grid" onsubmit="event.preventDefault(); alert('Form submitted!');">
+      <div class="ayo-form-field">
+        <label for="ayo-pickup">Pick up</label>
+        <input type="text" id="ayo-pickup" placeholder="Type or select from our most popular" required>
+        <a href="#" class="ayo-help-link">Want a UK airport taxi?</a>
+      </div>
+      <div class="ayo-form-field">
+        <label for="ayo-dropoff">Drop off</label>
+        <input type="text" id="ayo-dropoff" placeholder="Hotel, airport, other" required>
+      </div>
+      <div class="ayo-form-field">
+        <label for="ayo-outbound">Outbound flight</label>
+        <select id="ayo-outbound">
+          <option value="">Please select</option>
+        </select>
+      </div>
+      <div class="ayo-form-field">
+        <label for="ayo-return">Return flight</label>
+        <select id="ayo-return">
+          <option value="">Please select</option>
+        </select>
+      </div>
+      <div class="ayo-form-field">
+        <label for="ayo-travellers">Travellers</label>
+        <select id="ayo-travellers" required>
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <div class="ayo-search-container">
+        <button type="submit" class="ayo-search-button">Search</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Toggle active state on transfer type options.
+  document.addEventListener('DOMContentLoaded', function () {
+    const options = document.querySelectorAll('.ayo-transfer-type .option');
+    options.forEach(option => {
+      option.addEventListener('click', function () {
+        options.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+        const radio = this.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+      });
+    });
+  });
+</script>

@@ -1,0 +1,313 @@
+<!--
+  transfer-form-restyle-snippet.html
+
+  Copy everything from the opening <style> tag down to the closing </script>
+  into the CMS directly below the `<h1>Airport Transfers</h1>` heading.
+  The script looks for the existing #transfersEngine form that the Holiday
+  Extras booking widget renders server-side. It then layers new utility
+  classes over the live markup so we can lay it out as a two-row grid on
+  mobile landscape without breaking any built-in functionality.
+-->
+
+<style>
+  /* Base container refinements */
+  #transfersEngine.hx-transfer-modern {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    padding: 1.25rem 1.25rem 1.75rem;
+    background: #ffffff;
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 20px 45px rgba(63, 36, 96, 0.08);
+  }
+
+  @media (max-width: 599px) {
+    #transfersEngine.hx-transfer-modern {
+      padding: 1.15rem;
+      border-radius: 12px;
+      box-shadow: 0 12px 36px rgba(63, 36, 96, 0.12);
+    }
+  }
+
+  /* Remove legacy panel padding */
+  #transfersEngine.hx-transfer-modern .hx-transfer-modern__body {
+    padding: 0;
+  }
+
+  /* Reset Bootstrap row gutters and floats */
+  #transfersEngine.hx-transfer-modern .hx-transfer__grid {
+    display: grid;
+    margin: 0;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  /* Default mobile (single column) layout */
+  #transfersEngine.hx-transfer-modern .hx-transfer__grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "pickup"
+      "dropoff"
+      "outbound"
+      "return"
+      "travellers"
+      "submit";
+  }
+
+  /* Mobile landscape & small tablets */
+  @media (min-width: 600px) and (max-width: 991px) {
+    #transfersEngine.hx-transfer-modern .hx-transfer__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-areas:
+        "pickup dropoff outbound"
+        "return travellers submit";
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 992px) {
+    #transfersEngine.hx-transfer-modern .hx-transfer__grid {
+      grid-template-columns: 1.2fr 1.2fr 1fr 1fr 0.75fr 0.6fr;
+      grid-template-areas: "pickup dropoff outbound return travellers submit";
+      gap: 1.5rem;
+    }
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__field {
+    margin: 0;
+    float: none !important;
+    width: auto;
+    min-width: 0;
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__field--pickup { grid-area: pickup; }
+  #transfersEngine.hx-transfer-modern .hx-transfer__field--dropoff { grid-area: dropoff; }
+  #transfersEngine.hx-transfer-modern .hx-transfer__field--outbound { grid-area: outbound; }
+  #transfersEngine.hx-transfer-modern .hx-transfer__field--return { grid-area: return; }
+  #transfersEngine.hx-transfer-modern .hx-transfer__field--travellers { grid-area: travellers; }
+  #transfersEngine.hx-transfer-modern .hx-transfer__field--submit {
+    grid-area: submit;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  #transfersEngine.hx-transfer-modern label {
+    font-weight: 600;
+    color: #2f2e41;
+    font-size: 0.92rem;
+    margin-bottom: 0.55rem;
+  }
+
+  @media (max-width: 599px) {
+    #transfersEngine.hx-transfer-modern label {
+      font-size: 1rem;
+      margin-bottom: 0.7rem;
+    }
+  }
+
+  #transfersEngine.hx-transfer-modern .form-control {
+    height: 52px;
+    padding: 0.75rem 0.9rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 10px;
+    font-size: 1rem;
+    line-height: 1.2;
+    color: #181433;
+    background-color: #fff;
+    box-shadow: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+
+  @media (max-width: 599px) {
+    #transfersEngine.hx-transfer-modern .form-control {
+      height: 56px;
+      font-size: 1.05rem;
+      border-radius: 12px;
+    }
+  }
+
+  #transfersEngine.hx-transfer-modern .form-control:focus {
+    border-color: #542e91;
+    box-shadow: 0 0 0 3px rgba(84, 46, 145, 0.15);
+    outline: none;
+    transform: translateY(-1px);
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer-modern__help {
+    margin-top: 0.5rem;
+    float: none !important;
+    text-align: left;
+    font-size: 0.8rem;
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer-modern__help-link {
+    color: #542e91;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer-modern__help-link:hover {
+    text-decoration: underline;
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__submit-inner {
+    width: 100%;
+    margin: 0;
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__button {
+    width: 100%;
+    min-height: 52px;
+    border: none;
+    border-radius: 10px;
+    background: #542e91;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1.5rem;
+    box-shadow: 0 12px 26px rgba(84, 46, 145, 0.32);
+    transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__button:hover {
+    background: #3d1f6b;
+    box-shadow: 0 18px 32px rgba(61, 31, 107, 0.35);
+    transform: translateY(-1px);
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__button:active {
+    transform: translateY(0);
+    box-shadow: 0 10px 20px rgba(84, 46, 145, 0.28);
+  }
+
+  #transfersEngine.hx-transfer-modern .hx-transfer__button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(84, 46, 145, 0.32);
+  }
+
+  @media (max-width: 599px) {
+    #transfersEngine.hx-transfer-modern .hx-transfer__field--submit {
+      justify-content: center;
+    }
+    #transfersEngine.hx-transfer-modern .hx-transfer__button {
+      max-width: 320px;
+      border-radius: 12px;
+      font-size: 1.18rem;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var MAX_WAIT = 12000;
+
+    function enhanceTransfersForm() {
+      var form = document.getElementById('transfersEngine');
+      if (!form || form.classList.contains('hx-transfer-modern')) {
+        return !!form && form.classList.contains('hx-transfer-modern');
+      }
+
+      form.classList.add('hx-transfer-modern');
+
+      var panelBody = form.querySelector('.panel-body');
+      if (panelBody) {
+        panelBody.classList.add('hx-transfer-modern__body');
+      }
+
+      var grid = form.querySelector('.flightEngine');
+      if (!grid) {
+        return true;
+      }
+      grid.classList.add('hx-transfer__grid');
+
+      var i;
+
+      function removeBootstrapColumns(el) {
+        if (!el || !el.classList) return;
+        for (i = el.classList.length - 1; i >= 0; i -= 1) {
+          var cls = el.classList[i];
+          if (/^col-/.test(cls)) {
+            el.classList.remove(cls);
+          }
+        }
+      }
+
+      function tagField(el, area) {
+        if (!el) return;
+        removeBootstrapColumns(el);
+        el.classList.add('hx-transfer__field');
+        if (area) {
+          el.classList.add('hx-transfer__field--' + area);
+        }
+      }
+
+      function fieldFromInput(selector, area) {
+        var input = form.querySelector(selector);
+        if (!input) return;
+        var parent = input.parentElement;
+        while (parent && (!(parent.classList && parent.classList.contains('form-group')))) {
+          parent = parent.parentElement;
+        }
+        if (parent) {
+          tagField(parent, area);
+        }
+      }
+
+      tagField(form.querySelector('.flightEngine .pickUpLocation'), 'pickup');
+      tagField(form.querySelector('.flightEngine .dropOffLocation'), 'dropoff');
+      fieldFromInput('#outboundFlightInput', 'outbound');
+      fieldFromInput('#returnFlightInput', 'return');
+      tagField(form.querySelector('.flightEngine .passengers'), 'travellers');
+
+      var submit = form.querySelector('.flightEngine .submit');
+      if (submit) {
+        tagField(submit, 'submit');
+        var inner = submit.querySelector('.form-group');
+        if (inner) {
+          inner.classList.add('hx-transfer__submit-inner');
+        }
+        var button = submit.querySelector('button');
+        if (button) {
+          button.classList.add('hx-transfer__button');
+        }
+      }
+
+      var helpWrapper = form.querySelector('.pickUpLocation .text-muted');
+      if (helpWrapper) {
+        helpWrapper.classList.add('hx-transfer-modern__help');
+        var helpLink = helpWrapper.querySelector('a');
+        if (helpLink) {
+          helpLink.classList.add('hx-transfer-modern__help-link');
+        }
+      }
+
+      return true;
+    }
+
+    function waitForForm() {
+      if (enhanceTransfersForm()) {
+        return;
+      }
+      var observer = new MutationObserver(function (mutations, obs) {
+        if (enhanceTransfersForm()) {
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(function () {
+        observer.disconnect();
+      }, MAX_WAIT);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', waitForForm);
+    } else {
+      waitForForm();
+    }
+  })();
+</script>
