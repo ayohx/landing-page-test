@@ -8,13 +8,21 @@
   classes over the live markup so we can lay it out as a two-row grid on
   mobile landscape without breaking any built-in functionality.
 -->
-
 <style>
-  /* Base container refinements */
+  .hx-transfer-modern__layout {
+    display: block;
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+
+  .hx-transfer-modern__switcher {
+    margin: 0 0 1rem;
+  }
+
   #transfersEngine.hx-transfer-modern {
     max-width: 1200px;
-    margin: 0 auto 2rem;
-    padding: 1.25rem 1.25rem 1.75rem;
+    margin: 0 auto 1.75rem;
+    padding: 1.1rem 1.1rem 1.5rem;
     background: #ffffff;
     border: none;
     border-radius: 14px;
@@ -29,21 +37,15 @@
     }
   }
 
-  /* Remove legacy panel padding */
   #transfersEngine.hx-transfer-modern .hx-transfer-modern__body {
     padding: 0;
   }
 
-  /* Reset Bootstrap row gutters and floats */
   #transfersEngine.hx-transfer-modern .hx-transfer__grid {
     display: grid;
     margin: 0;
-    gap: 1.25rem;
+    gap: 1rem;
     align-items: stretch;
-  }
-
-  /* Default mobile (single column) layout */
-  #transfersEngine.hx-transfer-modern .hx-transfer__grid {
     grid-template-columns: 1fr;
     grid-template-areas:
       "pickup"
@@ -54,17 +56,87 @@
       "submit";
   }
 
-  /* Mobile landscape & small tablets */
   @media (min-width: 600px) and (max-width: 991px) {
+    .hx-transfer-modern__layout {
+      display: grid;
+      grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: stretch;
+    }
+
+    .hx-transfer-modern__switcher {
+      margin: 0;
+      padding: 0.35rem 0.2rem 0.35rem 0.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .hx-transfer-modern__switcher ul,
+    .hx-transfer-modern__switcher ol,
+    .hx-transfer-modern__switcher .nav {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.6rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      width: 100%;
+    }
+
+    .hx-transfer-modern__switcher li,
+    .hx-transfer-modern__switcher .nav > li {
+      width: 100%;
+    }
+
+    .hx-transfer-modern__switcher li > *,
+    .hx-transfer-modern__switcher .nav > li > * {
+      width: 100%;
+    }
+
     #transfersEngine.hx-transfer-modern .hx-transfer__grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       grid-template-areas:
         "pickup dropoff outbound"
         "return travellers submit";
+      gap: 0.75rem;
+    }
+
+    #transfersEngine.hx-transfer-modern {
+      padding: 0.9rem 0.9rem 1.2rem;
+      grid-column: 2;
+      align-self: stretch;
     }
   }
 
-  /* Desktop */
+  @media (min-width: 600px) and (max-width: 991px) and (orientation: landscape) {
+    #transfersEngine.hx-transfer-modern label {
+      font-size: 0.83rem;
+      margin-bottom: 0.45rem;
+    }
+
+    #transfersEngine.hx-transfer-modern .form-control {
+      height: 48px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.98rem;
+    }
+
+    #transfersEngine.hx-transfer-modern .hx-transfer__field--submit {
+      align-items: center;
+    }
+
+    #transfersEngine.hx-transfer-modern .hx-transfer__submit-inner {
+      justify-content: center;
+    }
+
+    #transfersEngine.hx-transfer-modern .hx-transfer__button {
+      max-width: 220px;
+      min-height: 48px;
+      font-size: 1.05rem;
+      letter-spacing: 0.01em;
+    }
+  }
+
   @media (min-width: 992px) {
     #transfersEngine.hx-transfer-modern .hx-transfer__grid {
       grid-template-columns: 1.2fr 1.2fr 1fr 1fr 0.75fr 0.6fr;
@@ -89,6 +161,7 @@
     grid-area: submit;
     display: flex;
     align-items: flex-end;
+    justify-content: flex-start;
   }
 
   #transfersEngine.hx-transfer-modern label {
@@ -153,6 +226,8 @@
   #transfersEngine.hx-transfer-modern .hx-transfer__submit-inner {
     width: 100%;
     margin: 0;
+    display: flex;
+    justify-content: flex-start;
   }
 
   #transfersEngine.hx-transfer-modern .hx-transfer__button {
@@ -165,7 +240,6 @@
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.02em;
-    text-transform: none;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -194,10 +268,24 @@
     #transfersEngine.hx-transfer-modern .hx-transfer__field--submit {
       justify-content: center;
     }
+
+    #transfersEngine.hx-transfer-modern .hx-transfer__submit-inner {
+      justify-content: center;
+    }
+
     #transfersEngine.hx-transfer-modern .hx-transfer__button {
       max-width: 320px;
       border-radius: 12px;
       font-size: 1.18rem;
+      margin: 0 auto;
+    }
+
+    .hx-transfer-modern__layout {
+      display: block;
+    }
+
+    .hx-transfer-modern__switcher {
+      margin-bottom: 1rem;
     }
   }
 </style>
@@ -286,7 +374,69 @@
         }
       }
 
+      enhanceTransferSwitcher(form);
+
       return true;
+    }
+
+    function enhanceTransferSwitcher(form) {
+      if (!form) return;
+
+      var switcherLabel = null;
+      var labelCandidates = document.querySelectorAll('label, a, span, small, button');
+      for (var j = 0; j < labelCandidates.length; j += 1) {
+        var candidate = labelCandidates[j];
+        if (!candidate || !candidate.textContent) continue;
+        if (/Overseas\s+Airport\s+Transfers/i.test(candidate.textContent)) {
+          switcherLabel = candidate;
+          break;
+        }
+      }
+
+      if (!switcherLabel) return;
+
+      var switcherContainer = switcherLabel.closest('ul, ol, .nav, .product-tabs, .engineSelector');
+      if (!switcherContainer) {
+        switcherContainer = switcherLabel.parentElement;
+      }
+      if (!switcherContainer) return;
+
+      var sharedAncestor = findSharedAncestor(switcherContainer, form);
+      if (!sharedAncestor || sharedAncestor === document.body || sharedAncestor === document.documentElement) {
+        return;
+      }
+
+      sharedAncestor.classList.add('hx-transfer-modern__layout');
+
+      var switcherWrapper = switcherContainer;
+      while (switcherWrapper && switcherWrapper.parentElement && switcherWrapper.parentElement !== sharedAncestor) {
+        switcherWrapper = switcherWrapper.parentElement;
+      }
+
+      if (!switcherWrapper || switcherWrapper === document.body) {
+        switcherWrapper = switcherContainer;
+      }
+
+      switcherWrapper.classList.add('hx-transfer-modern__switcher');
+    }
+
+    function findSharedAncestor(a, b) {
+      if (!a || !b) return null;
+      var ancestors = [];
+      var cursor = a;
+      while (cursor) {
+        ancestors.push(cursor);
+        cursor = cursor.parentElement;
+      }
+
+      cursor = b;
+      while (cursor) {
+        if (ancestors.indexOf(cursor) !== -1) {
+          return cursor;
+        }
+        cursor = cursor.parentElement;
+      }
+      return null;
     }
 
     function waitForForm() {
